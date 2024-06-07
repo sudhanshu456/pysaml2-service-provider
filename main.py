@@ -13,6 +13,7 @@ from flask import render_template
 import os
 import base64
 import argparse
+from filters import format_xml_filter
 
 # Define the argument parser and parse arguments
 parser = argparse.ArgumentParser(description='Demo Application')
@@ -52,6 +53,9 @@ def saml_client_for(config):
 
 app = Flask(__name__)
 
+# Register the format_xml_filter with the Jinja environment
+app.jinja_env.filters['format_xml'] = format_xml_filter
+
 # Set the secret key to some random bytes. Keep this really secret!
 # This enables Flask session cookies
 app.secret_key = '^ovdD@8Sj3P!8&k$8dYzesadkadsakhdh^o3r5LUs7cPU2'
@@ -73,10 +77,12 @@ def hello():
         last_name = escape(session.get('lastname', ''))
         email = escape(session.get('email', ''))
         profileUrl = escape(session.get('profileUrl', ''))
+        authn_response_string = session.get('authn_response_string', '')
 
         return render_template('template.html', is_authenticated=is_authenticated,
                                 name_id=name_id, first_name=first_name,
                                 last_name=last_name, email=email,
+                                authn_response_string=authn_response_string,
                                 profileUrl=profileUrl), 200
     else:
         metadata_url = BASE_URL + "/saml/metadata"
@@ -143,6 +149,14 @@ def acs():
             for attribute in statement.attribute:
                 # Assuming single value attributes for simplicity
                 attributes[attribute.name] = attribute.attribute_value[0].text
+
+
+         # Convert authn_response object to string
+        authn_response_string = str(authn_response)
+
+        # Store authn_response string in session
+        session['authn_response_string'] = authn_response_string
+
 
         # Set the user session
         session['name_id'] = name_id
