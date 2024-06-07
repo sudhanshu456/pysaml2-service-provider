@@ -13,10 +13,9 @@ from flask import render_template
 import os
 import base64
 import argparse
-from filters import format_xml_filter
 
 # Define the argument parser and parse arguments
-parser = argparse.ArgumentParser(description='Demo Application')
+parser = argparse.ArgumentParser(description='Sample SaaS App')
 parser.add_argument('--debug', action='store_true', help='Enable debug mode')
 args = parser.parse_args()
 
@@ -54,7 +53,6 @@ def saml_client_for(config):
 app = Flask(__name__)
 
 # Register the format_xml_filter with the Jinja environment
-app.jinja_env.filters['format_xml'] = format_xml_filter
 
 # Set the secret key to some random bytes. Keep this really secret!
 # This enables Flask session cookies

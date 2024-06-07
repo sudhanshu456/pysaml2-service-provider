@@ -42,15 +42,8 @@
                         <h1>Welcome, {{ first_name }} {{ last_name }}!</h1>
                         <img src="{{ profileUrl }}" alt="Profile Picture" class="img-fluid">
                         <p>Your ID: {{ name_id }}</p>
-                        <p>Your Email ID: {{ email }}</p>
-                        
-                        <h2>SAML Authentication Response</h2>
-                        
-                        <div class="card-body text-justify">
-                            <pre>{{ authn_response_string| format_xml }}</pre>
-                            <hr>
-                        </div>
-
+                        <p>Your Email ID: {{ email }}</p>             
+                        <hr>
                         <a href="/logout" class="btn btn-primary btn-block">Logout</a>
                     {% else %}
                         <h1>Sample SaaS App</h1>
