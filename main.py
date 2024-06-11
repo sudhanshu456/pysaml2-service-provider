@@ -15,7 +15,7 @@ import base64
 import argparse
 
 # Define the argument parser and parse arguments
-parser = argparse.ArgumentParser(description='Demo Application')
+parser = argparse.ArgumentParser(description='Sample SaaS App')
 parser.add_argument('--debug', action='store_true', help='Enable debug mode')
 args = parser.parse_args()
 
@@ -52,6 +52,8 @@ def saml_client_for(config):
 
 app = Flask(__name__)
 
+# Register the format_xml_filter with the Jinja environment
+
 # Set the secret key to some random bytes. Keep this really secret!
 # This enables Flask session cookies
 app.secret_key = '^ovdD@8Sj3P!8&k$8dYzesadkadsakhdh^o3r5LUs7cPU2'
@@ -73,11 +75,15 @@ def hello():
         last_name = escape(session.get('lastname', ''))
         email = escape(session.get('email', ''))
         profileUrl = escape(session.get('profileUrl', ''))
+        authn_response_string = session.get('authn_response_string', '')
+        attributes = session.get('attributes','{}')
 
         return render_template('template.html', is_authenticated=is_authenticated,
                                 name_id=name_id, first_name=first_name,
                                 last_name=last_name, email=email,
-                                profileUrl=profileUrl), 200
+                                authn_response_string=authn_response_string,
+                                profileUrl=profileUrl,
+                                attributes=attributes), 200
     else:
         metadata_url = BASE_URL + "/saml/metadata"
 
@@ -144,6 +150,14 @@ def acs():
                 # Assuming single value attributes for simplicity
                 attributes[attribute.name] = attribute.attribute_value[0].text
 
+
+         # Convert authn_response object to string
+        authn_response_string = str(authn_response)
+
+        # Store authn_response string in session
+        session['authn_response_string'] = authn_response_string
+
+
         # Set the user session
         session['name_id'] = name_id
         session['firstname'] = attributes.get('firstname', None)
@@ -151,7 +165,7 @@ def acs():
         session['is_authenticated'] = True
         session['email'] = attributes.get('email', None)
         session['profileUrl']= attributes.get('profileUrl',None)
-        #print(authn_response.assertion)
+        session['attributes'] = attributes
 
         # Ensure the assertion object is a string
         assertion_string = str(authn_response.assertion)
