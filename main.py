@@ -76,12 +76,14 @@ def hello():
         email = escape(session.get('email', ''))
         profileUrl = escape(session.get('profileUrl', ''))
         authn_response_string = session.get('authn_response_string', '')
+        attributes = session.get('attributes','{}')
 
         return render_template('template.html', is_authenticated=is_authenticated,
                                 name_id=name_id, first_name=first_name,
                                 last_name=last_name, email=email,
                                 authn_response_string=authn_response_string,
-                                profileUrl=profileUrl), 200
+                                profileUrl=profileUrl,
+                                attributes=attributes), 200
     else:
         metadata_url = BASE_URL + "/saml/metadata"
 
@@ -163,7 +165,7 @@ def acs():
         session['is_authenticated'] = True
         session['email'] = attributes.get('email', None)
         session['profileUrl']= attributes.get('profileUrl',None)
-        #print(authn_response.assertion)
+        session['attributes'] = attributes
 
         # Ensure the assertion object is a string
         assertion_string = str(authn_response.assertion)
