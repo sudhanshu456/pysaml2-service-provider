@@ -178,8 +178,6 @@ def acs():
         session.clear()
         return f"EXCEPTION {e}", 403
 
-    # Load and parse the metadata XML file
-
 @app.route('/logout')
 def logout():
     """
